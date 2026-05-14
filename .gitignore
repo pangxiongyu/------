@@ -1,0 +1,6 @@
+.claude/
+*.png
+*.jpg
+*.docx
+.DS_Store
+Thumbs.db
