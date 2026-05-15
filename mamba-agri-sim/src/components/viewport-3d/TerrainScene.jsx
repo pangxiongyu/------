@@ -5,7 +5,7 @@ import ProceduralTerrain from './ProceduralTerrain'
 import FlightPathLine from './FlightPathLine'
 import DroneMarkers from './DroneMarkers'
 
-function Scene() {
+function Scene({ flightParams }) {
   return (
     <>
       <Sky sunPosition={[100, 50, 100]} turbidity={8} rayleigh={2} />
@@ -23,7 +23,7 @@ function Scene() {
       <hemisphereLight args={['#87CEEB', '#3B5323', 0.3]} />
 
       <ProceduralTerrain />
-      <FlightPathLine />
+      <FlightPathLine flightParams={flightParams} />
       <DroneMarkers />
 
       <OrbitControls
@@ -39,7 +39,7 @@ function Scene() {
   )
 }
 
-export default function TerrainScene() {
+export default function TerrainScene({ flightParams }) {
   return (
     <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
       <Canvas
@@ -49,7 +49,7 @@ export default function TerrainScene() {
         style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #E0F2FE 100%)' }}
       >
         <Suspense fallback={null}>
-          <Scene />
+          <Scene flightParams={flightParams} />
         </Suspense>
       </Canvas>
     </div>

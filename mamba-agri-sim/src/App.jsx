@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Navbar from './components/common/Navbar'
+import { useAuth } from './context/AuthContext'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const SceneDetailPage = lazy(() => import('./pages/SceneDetailPage'))
@@ -11,6 +12,8 @@ const Viewport3DPage = lazy(() => import('./pages/Viewport3DPage'))
 const DataDisplayPage = lazy(() => import('./pages/DataDisplayPage'))
 const TransitionPage = lazy(() => import('./pages/TransitionPage'))
 const ThanksPage = lazy(() => import('./pages/ThanksPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const RegisterPage = lazy(() => import('./pages/RegisterPage'))
 
 function LoadingFallback() {
   return (
@@ -25,10 +28,13 @@ function LoadingFallback() {
 
 export default function App() {
   const location = useLocation()
+  const { user } = useAuth()
+
+  const hideNav = location.pathname === '/login' || location.pathname === '/register'
 
   return (
     <>
-      <Navbar />
+      {!hideNav && <Navbar />}
       <Suspense fallback={<LoadingFallback />}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
@@ -40,6 +46,8 @@ export default function App() {
             <Route path="/data-display" element={<DataDisplayPage />} />
             <Route path="/transition" element={<TransitionPage />} />
             <Route path="/thanks" element={<ThanksPage />} />
+            <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
+            <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
           </Routes>
         </AnimatePresence>
       </Suspense>
