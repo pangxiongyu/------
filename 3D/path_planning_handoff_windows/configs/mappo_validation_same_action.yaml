@@ -1,0 +1,38 @@
+base_config: configs/default.yaml
+
+experiments:
+  - name: train_like_t0_h10
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 10
+        uav_count: 3
+      marl:
+        max_steps: 4
+
+  - name: midday_t12_h10
+    overrides:
+      scenario:
+        time_index: 12
+        height_m: 10
+        uav_count: 3
+      marl:
+        max_steps: 4
+
+  - name: t0_h100
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 100
+        uav_count: 3
+      marl:
+        max_steps: 4
+
+  - name: evening_t18_h100
+    overrides:
+      scenario:
+        time_index: 18
+        height_m: 100
+        uav_count: 3
+      marl:
+        max_steps: 4

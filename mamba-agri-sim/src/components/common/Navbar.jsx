@@ -33,8 +33,11 @@ export default function Navbar() {
   useEffect(() => { setMobileOpen(false) }, [location])
 
   const isHome = location.pathname === '/'
+  const isImmersive3D = location.pathname === '/viewport-3d'
   const bgClass = scrolled || !isHome
-    ? 'bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100/60'
+    ? isImmersive3D
+      ? 'bg-[#07130f]/92 backdrop-blur-xl border-b border-white/10 shadow-none'
+      : 'bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100/60'
     : 'bg-transparent'
 
   const handleLogout = () => {
@@ -57,7 +60,11 @@ export default function Navbar() {
             </div>
             <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-white animate-breathe" />
           </div>
-          <span className="text-lg font-bold text-dark group-hover:text-agri-600 transition-colors">
+          <span className={`text-lg font-bold transition-colors ${
+            isImmersive3D
+              ? 'text-white group-hover:text-agri-200'
+              : 'text-dark group-hover:text-agri-600'
+          }`}>
             智农<span className="text-agri-500">Mamba</span>
           </span>
         </Link>
@@ -66,19 +73,24 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-1">
           {NAV_ITEMS.map((item) => {
             const active = location.pathname === item.path
+            const navLinkClass = isImmersive3D
+              ? active
+                ? 'text-white bg-white/10'
+                : 'text-white/70 hover:text-white hover:bg-white/10'
+              : active
+                ? 'text-agri-700 bg-agri-50/80'
+                : 'text-gray-600 hover:text-agri-600 hover:bg-gray-50/80'
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  active
-                    ? 'text-agri-700 bg-agri-50/80'
-                    : 'text-gray-600 hover:text-agri-600 hover:bg-gray-50/80'
-                }`}
+                className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${navLinkClass}`}
               >
                 {item.label}
                 {active && (
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-5 h-[2px] rounded-full bg-gradient-to-r from-agri-400 to-agri-600" />
+                  <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-5 h-[2px] rounded-full bg-gradient-to-r ${
+                    isImmersive3D ? 'from-agri-300 to-emerald-200' : 'from-agri-400 to-agri-600'
+                  }`} />
                 )}
               </Link>
             )
@@ -87,12 +99,20 @@ export default function Navbar() {
 
         {/* Right actions */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 bg-gray-100/80 backdrop-blur-sm rounded-xl px-3.5 py-2.5 border border-gray-200/60 transition-all duration-300 focus-within:border-agri-300 focus-within:shadow-glow-sm">
-            <HiSearch className="text-gray-400 w-4 h-4 flex-shrink-0" />
+          <div className={`hidden sm:flex items-center gap-2 rounded-xl px-3.5 py-2.5 backdrop-blur-sm transition-all duration-300 focus-within:border-agri-300 focus-within:shadow-glow-sm ${
+            isImmersive3D
+              ? 'bg-white/10 border border-white/10'
+              : 'bg-gray-100/80 border border-gray-200/60'
+          }`}>
+            <HiSearch className={`${isImmersive3D ? 'text-white/50' : 'text-gray-400'} w-4 h-4 flex-shrink-0`} />
             <input
               type="text"
               placeholder="搜索..."
-              className="bg-transparent text-sm text-gray-600 outline-none w-28 placeholder:text-gray-400"
+              className={`bg-transparent text-sm outline-none w-28 ${
+                isImmersive3D
+                  ? 'text-white placeholder:text-white/45'
+                  : 'text-gray-600 placeholder:text-gray-400'
+              }`}
             />
           </div>
 
@@ -132,7 +152,11 @@ export default function Navbar() {
             <div className="hidden sm:flex items-center gap-2">
               <Link
                 to="/login"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-agri-600 hover:bg-agri-50 transition-all"
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  isImmersive3D
+                    ? 'text-agri-200 hover:bg-white/10'
+                    : 'text-agri-600 hover:bg-agri-50'
+                }`}
               >
                 <HiLogin className="w-4 h-4" />
                 登录
@@ -148,7 +172,11 @@ export default function Navbar() {
           )}
 
           <button
-            className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            className={`lg:hidden p-2 rounded-lg transition-colors ${
+              isImmersive3D
+                ? 'text-white/80 hover:bg-white/10'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
@@ -158,19 +186,26 @@ export default function Navbar() {
 
       {/* Mobile Nav */}
       {mobileOpen && (
-        <div className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-lg">
+        <div className={`lg:hidden backdrop-blur-xl border-t shadow-lg ${
+          isImmersive3D
+            ? 'bg-[#07130f]/95 border-white/10'
+            : 'bg-white/95 border-gray-100'
+        }`}>
           <div className="px-4 py-3 flex flex-col gap-1">
             {NAV_ITEMS.map((item) => {
               const active = location.pathname === item.path
+              const mobileLinkClass = isImmersive3D
+                ? active
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/70 hover:bg-white/10'
+                : active
+                  ? 'bg-agri-50 text-agri-700 shadow-sm'
+                  : 'text-gray-600 hover:bg-gray-50'
               return (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    active
-                      ? 'bg-agri-50 text-agri-700 shadow-sm'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${mobileLinkClass}`}
                 >
                   {item.label}
                 </Link>
@@ -178,7 +213,7 @@ export default function Navbar() {
             })}
 
             {/* Mobile auth links */}
-            <div className="border-t border-gray-100 pt-2 mt-2">
+            <div className={`border-t pt-2 mt-2 ${isImmersive3D ? 'border-white/10' : 'border-gray-100'}`}>
               {user ? (
                 <>
                   <div className="px-4 py-2 flex items-center gap-3">

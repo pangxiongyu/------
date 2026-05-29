@@ -1,0 +1,36 @@
+base_config: configs/default.yaml
+output_dir: outputs/mappo_long_experiments
+
+experiments:
+  - name: seed11_e30_lr3e4
+    overrides:
+      mappo:
+        seed: 11
+        episodes: 30
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 3
+
+  - name: seed11_e50_lr3e4
+    overrides:
+      mappo:
+        seed: 11
+        episodes: 50
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 3
+
+  - name: seed11_e100_lr1e4
+    overrides:
+      mappo:
+        seed: 11
+        episodes: 100
+        ppo_epochs: 2
+        learning_rate: 0.0001
+        reward_scale: 0.01
+        eval_interval: 10
+        eval_episodes: 3

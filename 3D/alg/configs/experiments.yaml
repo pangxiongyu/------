@@ -1,0 +1,57 @@
+base_config: configs/default.yaml
+output_dir: outputs/batch_experiments
+
+experiments:
+  - name: t0_h10_weather_grid
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 10
+      marl:
+        use_weather_grid_paths: true
+        route_strategies: [direct, weather_grid]
+
+  - name: t0_h10_weather_3d_only
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 10
+      marl:
+        use_weather_grid_paths: false
+        route_strategies: [weather_3d]
+
+  - name: t0_h10_direct_only
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 10
+      marl:
+        use_weather_grid_paths: false
+        route_strategies: [direct]
+
+  - name: t12_h10_weather_grid
+    overrides:
+      scenario:
+        time_index: 12
+        height_m: 10
+      marl:
+        use_weather_grid_paths: true
+        route_strategies: [direct, weather_grid]
+
+  - name: t0_h100_weather_grid
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 100
+      marl:
+        use_weather_grid_paths: true
+        route_strategies: [direct, weather_grid]
+
+  - name: t0_h100_weather_3d_only
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 100
+      marl:
+        use_weather_grid_paths: false
+        route_strategies: [weather_3d]

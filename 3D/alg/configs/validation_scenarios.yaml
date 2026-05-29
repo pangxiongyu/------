@@ -1,0 +1,55 @@
+base_config: configs/default.yaml
+output_dir: outputs/validation_scenarios
+
+experiments:
+  - name: default_t0_h10_3u5tasks
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 10
+        uav_count: 3
+
+  - name: midday_t12_h10_3u5tasks
+    overrides:
+      scenario:
+        time_index: 12
+        height_m: 10
+        uav_count: 3
+
+  - name: default_t0_h100_3u5tasks
+    overrides:
+      scenario:
+        time_index: 0
+        height_m: 100
+        uav_count: 3
+
+  - name: evening_t18_h100_3u5tasks
+    overrides:
+      scenario:
+        time_index: 18
+        height_m: 100
+        uav_count: 3
+
+  - name: generated_t0_h10_4u8tasks
+    overrides:
+      paths:
+        tasks:
+      scenario:
+        time_index: 0
+        height_m: 10
+        uav_count: 4
+        task_count: 8
+      marl:
+        max_steps: 8
+
+  - name: generated_t12_h100_4u8tasks
+    overrides:
+      paths:
+        tasks:
+      scenario:
+        time_index: 12
+        height_m: 100
+        uav_count: 4
+        task_count: 8
+      marl:
+        max_steps: 8

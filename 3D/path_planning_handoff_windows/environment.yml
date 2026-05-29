@@ -1,0 +1,24 @@
+name: torch_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - plotly
+  - tqdm
+  - pyyaml
+  - pytest
+  - cvxpy
+  - osqp
+  - pip:
+      - torch
+      - torchvision
+      - torchaudio
+      - gymnasium
+      - pettingzoo
+      - supersuit

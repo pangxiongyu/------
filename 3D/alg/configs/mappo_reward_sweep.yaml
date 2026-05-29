@@ -1,0 +1,80 @@
+base_config: configs/default.yaml
+output_dir: outputs/mappo_reward_sweep
+selection_mode: path_cost
+
+experiments:
+  - name: balanced_e20
+    overrides:
+      mappo:
+        seed: 11
+        episodes: 20
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 3
+      marl:
+        reward:
+          task_complete_reward: 100.0
+          distance_weight: 10.0
+          weather_weight: 20.0
+          energy_weight: 5.0
+          risk_weight: 1.0
+          max_distance_km: 1500.0
+
+  - name: path_focused_e20
+    overrides:
+      mappo:
+        seed: 11
+        episodes: 20
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 3
+      marl:
+        reward:
+          task_complete_reward: 100.0
+          distance_weight: 25.0
+          weather_weight: 20.0
+          energy_weight: 5.0
+          risk_weight: 1.0
+          max_distance_km: 1500.0
+
+  - name: weather_focused_e20
+    overrides:
+      mappo:
+        seed: 11
+        episodes: 20
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 3
+      marl:
+        reward:
+          task_complete_reward: 100.0
+          distance_weight: 10.0
+          weather_weight: 45.0
+          energy_weight: 5.0
+          risk_weight: 1.0
+          max_distance_km: 1500.0
+
+  - name: cost_focused_e20
+    overrides:
+      mappo:
+        seed: 11
+        episodes: 20
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 3
+      marl:
+        reward:
+          task_complete_reward: 90.0
+          distance_weight: 25.0
+          weather_weight: 45.0
+          energy_weight: 5.0
+          risk_weight: 1.0
+          max_distance_km: 1500.0

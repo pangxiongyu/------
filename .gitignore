@@ -4,3 +4,20 @@
 *.docx
 .DS_Store
 Thumbs.db
+__MACOSX/
+node_modules/
+dist/
+
+# Data sets and generated algorithm outputs should stay out of git.
+UAV_datas/
+3D/**/output_data/
+3D/**/outputs/
+3D/**/generated_weather_cost_map/
+3D/**/generated_uav_profiles/
+3D/**/data/weather_cost_map/*.csv
+3D/**/data/weather_cost_map/*.json
+3D/**/data/uav_profiles/*.csv
+3D/**/data/uav_profiles/*.pt
+3D/**/data/uav_profiles/*.json
+3D/**/data/tasks/*.csv
+3D/modeling_handoff_weather_cost_map.zip

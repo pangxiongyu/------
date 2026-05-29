@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Local editor and OS files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Experiment outputs
+runs/
+outputs/
+checkpoints/
+generated_weather_cost_map/
+generated_uav_profiles/
+
+# Large raw datasets should be shared with Git LFS, DVC, or external storage.
+UAV_datas/
+*.pt

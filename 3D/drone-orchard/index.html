@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Dynamic Orchard Simulation</title>
+    <style>
+      body { margin: 0; padding: 0; overflow: hidden; background: #07130f; font-family: 'Inter', 'Noto Sans SC', 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+      #root { width: 100vw; height: 100vh; }
+      
+      /* 模拟您图片中右侧的控制面板风格 */
+      #ui-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 320px;
+        height: 100vh;
+        background: rgba(245, 250, 245, 0.95);
+        border-left: 2px solid #2E8B57;
+        box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+
+      .panel-header {
+        background: #116530;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .panel-content {
+        padding: 20px;
+        flex: 1;
+      }
+
+      .control-card {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        border: 1px solid #e0e0e0;
+      }
+
+      .control-card h3 {
+        margin-top: 0;
+        font-size: 1rem;
+        color: #333;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+      }
+
+      .form-group { margin-bottom: 15px; }
+      label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: bold; color: #555; }
+      input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+      
+      .btn {
+        display: block;
+        width: 100%;
+        background: #e9ecef;
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-bottom: 10px;
+        transition: all 0.2s;
+        text-align: center;
+      }
+      
+      .btn:hover { background: #dee2e6; }
+      
+      .btn.active {
+        background: #28a745;
+        color: white;
+        border-color: #218838;
+        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+      }
+
+      .btn-primary {
+        background: #116530;
+        color: white;
+        border: none;
+        font-weight: bold;
+        padding: 12px;
+        font-size: 16px;
+      }
+      .btn-primary:hover { background: #0c4d23; }
+      .btn-primary:disabled { background: #a5c2b0; cursor: not-allowed; }
+
+      .coordinate-display {
+        font-family: monospace;
+        background: #f8f9fa;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+
+      .uav-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .uav-item {
+        display: flex;
+        align-items: center;
+        background: #e8f5e9;
+        padding: 10px;
+        border-radius: 6px;
+        border-left: 4px solid #4CAF50;
+        font-size: 12px;
+      }
+
+      #instruction-overlay {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 16px;
+        pointer-events: none;
+        z-index: 20;
+        transition: opacity 0.3s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

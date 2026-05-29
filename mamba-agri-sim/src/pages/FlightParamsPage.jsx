@@ -5,214 +5,261 @@ import { useAppContext } from '../context/AppContext'
 import PageContainer from '../components/common/PageContainer'
 import GlassCard from '../components/common/GlassCard'
 import SectionTitle from '../components/common/SectionTitle'
-import { HiPaperAirplane, HiMap, HiCog, HiArrowRight } from 'react-icons/hi'
+import SceneSelector from '../components/common/SceneSelector'
+import {
+  HiAdjustments,
+  HiArrowRight,
+  HiCheckCircle,
+  HiCloud,
+  HiCursorClick,
+  HiLightningBolt,
+  HiLocationMarker,
+  HiMap,
+  HiMinus,
+  HiPlus,
+  HiRefresh,
+} from 'react-icons/hi'
+
+const WORKFLOW_STEPS = [
+  {
+    title: '无人机起点',
+    text: '进入三维沙盘后，在地形上点击放置绿色起飞点。',
+  },
+  {
+    title: '任务目标点',
+    text: '继续点击设置红色任务点，平原按果树行，梯田按分层田面。',
+  },
+  {
+    title: '自动匹配',
+    text: '使用最近距离匹配生成航线，再进入仿真界面。',
+  },
+  {
+    title: '能耗计算',
+    text: '每架无人机按电量、基础耗电和风敏感系数计算消耗。',
+  },
+]
 
 export default function FlightParamsPage() {
-  const { flightParams, setFlightParams } = useAppContext()
+  const { flightParams, setFlightParams, selectedScene } = useAppContext()
   const navigate = useNavigate()
-  const [local, setLocal] = useState({ ...flightParams })
+  const [local, setLocal] = useState(() => ({
+    droneCount: selectedScene.planning.droneCount,
+    taskCount: selectedScene.planning.taskCount,
+    autoAssignment: true,
+    initialBatteryPercent: selectedScene.energy.initialBatteryPercent,
+    baseConsumptionPerMeter: selectedScene.energy.baseConsumptionPerMeter,
+    windSensitivity: selectedScene.energy.windSensitivity,
+    ...flightParams,
+  }))
 
-  const update = (key, value) => setLocal((p) => ({ ...p, [key]: value }))
+  const focusLayer = selectedScene.windLayers.find((layer) => layer.id === selectedScene.focusLayerId) ?? selectedScene.windLayers[0]
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setFlightParams(local)
-    navigate('/viewport-3d')
+  const update = (key, value) => setLocal((current) => ({ ...current, [key]: value }))
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const query = new URLSearchParams({
+      scene: selectedScene.id,
+      drones: String(local.droneCount),
+      tasks: String(local.taskCount),
+      battery: String(local.initialBatteryPercent),
+      consumption: String(local.baseConsumptionPerMeter),
+      windSensitivity: String(local.windSensitivity),
+      auto: String(local.autoAssignment),
+    })
+
+    setFlightParams({
+      ...local,
+      sceneId: selectedScene.id,
+      windLayers: selectedScene.windLayers,
+    })
+    navigate(`/viewport-3d?${query.toString()}`)
   }
 
   return (
-    <PageContainer>
-      <div className="max-w-7xl mx-auto px-6 py-20">
+    <PageContainer className="bg-gradient-to-b from-slate-950 via-emerald-950 to-slate-50">
+      <div className="mx-auto max-w-7xl px-6 py-14 md:py-18">
         <SectionTitle
-          badge="飞行配置"
-          title="飞行参数设置"
-          subtitle="配置无人机飞行航线参数与机载状态，一键启动智能路径规划"
+          badge="三维作业配置"
+          title="按三维控制台配置飞行任务"
+          subtitle="前端配置与三维页面保持同一套流程：选择场景、确认风场、设置起点和任务点数量，然后进入三维沙盘布点仿真"
+          light
         />
 
+        <SceneSelector className="mb-8" />
+
         <form onSubmit={handleSubmit}>
-          <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Left - Coordinate form */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <motion.aside
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+              className="space-y-5"
             >
-              <GlassCard variant="premium" className="!p-7">
-                <h2 className="text-xl font-bold text-dark mb-6 flex items-center gap-3">
-                  <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center border border-blue-100/50">
-                    <HiPaperAirplane className="w-5 h-5 text-blue-600" />
-                  </span>
-                  航线坐标设置
-                </h2>
-
-                {/* Mini coordinate visualization */}
-                <div className="mb-6 p-4 rounded-xl bg-gray-50/80 border border-gray-100">
-                  <svg viewBox="0 0 200 140" className="w-full h-32">
-                    {/* Grid */}
-                    {[0,1,2,3,4].map(i => (
-                      <g key={i}>
-                        <line x1={i*50} y1="0" x2={i*50} y2="140" stroke="#e5e7eb" strokeWidth="1"/>
-                        <line x1="0" y1={i*35} x2="200" y2={i*35} stroke="#e5e7eb" strokeWidth="1"/>
-                      </g>
-                    ))}
-                    {/* Axes */}
-                    <line x1="10" y1="130" x2="190" y2="130" stroke="#059669" strokeWidth="1.5" markerEnd="url(#arrow)"/>
-                    <line x1="10" y1="130" x2="10" y2="10" stroke="#059669" strokeWidth="1.5" markerEnd="url(#arrow)"/>
-                    <defs>
-                      <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                        <path d="M0 0L10 5L0 10Z" fill="#059669"/>
-                      </marker>
-                    </defs>
-                    {/* Start point */}
-                    <circle cx={10 + local.startX * 1.8} cy={130 - local.startY * 1.5} r="5" fill="#10B981" stroke="white" strokeWidth="2"/>
-                    {/* End point */}
-                    <circle cx={10 + local.endX * 1.8} cy={130 - local.endY * 1.5} r="5" fill="#2563EB" stroke="white" strokeWidth="2"/>
-                    {/* Path line */}
-                    <line
-                      x1={10 + local.startX * 1.8} y1={130 - local.startY * 1.5}
-                      x2={10 + local.endX * 1.8} y2={130 - local.endY * 1.5}
-                      stroke="#10B981" strokeWidth="2" strokeDasharray="6,3" opacity="0.6"
-                    />
-                    {/* Labels */}
-                    <text x="10" y="140" fill="#9CA3AF" fontSize="9">(0,0)</text>
-                    <text x="10 + local.startX * 1.8" y="130 - local.startY * 1.5 - 8" fill="#059669" fontSize="9" textAnchor="middle">起点</text>
-                    <text x="10 + local.endX * 1.8" y="130 - local.endY * 1.5 - 8" fill="#2563EB" fontSize="9" textAnchor="middle">终点</text>
-                  </svg>
-                  <div className="flex items-center gap-4 mt-2 justify-center text-xs text-gray-400">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-agri-500" />起点 ({local.startX}, {local.startY})</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500" />终点 ({local.endX}, {local.endY})</span>
+              <GlassCard variant="premium" hover={false} className="!rounded-lg !p-6">
+                <div className="flex items-start gap-4">
+                  <span className="text-5xl leading-none">{selectedScene.icon}</span>
+                  <div>
+                    <p className="text-sm font-bold text-agri-600">{selectedScene.badge}</p>
+                    <h2 className="mt-1 text-2xl font-black text-dark">{selectedScene.name}</h2>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-500">{selectedScene.summary}</p>
                   </div>
                 </div>
 
-                <div className="space-y-5">
-                  <div className="grid grid-cols-2 gap-4">
-                    <CoordInput label="起点 X" value={local.startX} onChange={(v) => update('startX', v)} />
-                    <CoordInput label="起点 Y" value={local.startY} onChange={(v) => update('startY', v)} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <CoordInput label="终点 X" value={local.endX} onChange={(v) => update('endX', v)} />
-                    <CoordInput label="终点 Y" value={local.endY} onChange={(v) => update('endY', v)} />
-                  </div>
+                <div className="mt-6 grid gap-3 text-sm">
+                  <SceneFact icon={<HiLocationMarker />} label="起降策略" value={selectedScene.params.start} />
+                  <SceneFact icon={<HiMap />} label="任务类型" value={selectedScene.params.task} />
+                  <SceneFact icon={<HiRefresh />} label="路径策略" value={selectedScene.params.route} />
+                  <SceneFact icon={<HiCloud />} label="重点风层" value={`${focusLayer.label} ${focusLayer.height}m`} />
                 </div>
-
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="btn-primary w-full mt-8 flex items-center justify-center gap-2 text-lg py-4 shadow-glow-sm hover:shadow-glow bg-gradient-to-r from-agri-500 to-emerald-600 group"
-                >
-                  <HiPaperAirplane className="w-5 h-5" />
-                  开始路径规划
-                  <HiArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                </motion.button>
               </GlassCard>
-            </motion.div>
 
-            {/* Right - Drone params */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              <GlassCard variant="premium" hover={false} className="!rounded-lg !p-6">
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-black text-dark">
+                  <HiCursorClick className="h-5 w-5 text-agri-600" />
+                  进入三维后的作业流程
+                </h3>
+                <div className="space-y-3">
+                  {WORKFLOW_STEPS.map((step, index) => (
+                    <WorkflowStep key={step.title} index={index + 1} title={step.title} text={step.text} />
+                  ))}
+                </div>
+              </GlassCard>
+            </motion.aside>
+
+            <motion.section
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.08 }}
+              className="grid gap-6 xl:grid-cols-2"
             >
-              <GlassCard variant="premium" className="!p-7">
-                <h2 className="text-xl font-bold text-dark mb-6 flex items-center gap-3">
-                  <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-agri-50 to-emerald-100 flex items-center justify-center border border-agri-100/50">
-                    <HiCog className="w-5 h-5 text-agri-600" />
+              <GlassCard variant="premium" hover={false} className="!rounded-lg !p-6">
+                <h2 className="mb-5 flex items-center gap-3 text-xl font-black text-dark">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-agri-50 text-agri-600">
+                    <HiAdjustments className="h-5 w-5" />
                   </span>
-                  无人机与环境参数
+                  航线配置中心
                 </h2>
 
                 <div className="space-y-5">
-                  <FormRow label="无人机编号">
+                  <CounterControl
+                    label="无人机起点"
+                    value={local.droneCount}
+                    min={1}
+                    max={12}
+                    onChange={(value) => update('droneCount', value)}
+                    description="对应三维页中的绿色起飞点数量"
+                  />
+                  <CounterControl
+                    label="任务目标点"
+                    value={local.taskCount}
+                    min={1}
+                    max={20}
+                    onChange={(value) => update('taskCount', value)}
+                    description="对应三维页中的红色任务点数量"
+                  />
+
+                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+                    <span>
+                      <span className="block text-sm font-black text-slate-800">自动匹配航线</span>
+                      <span className="mt-1 block text-xs leading-relaxed text-slate-500">{selectedScene.planning.assignment}</span>
+                    </span>
                     <input
-                      type="text" value={local.droneName}
-                      onChange={(e) => update('droneName', e.target.value)}
-                      className="input-glow"
+                      type="checkbox"
+                      checked={local.autoAssignment}
+                      onChange={(event) => update('autoAssignment', event.target.checked)}
+                      className="h-5 w-5 shrink-0 accent-emerald-500"
                     />
-                  </FormRow>
+                  </label>
 
-                  <div className="grid grid-cols-3 gap-3">
-                    <FormRow label="X 坐标">
-                      <input type="number" value={local.droneX}
-                        onChange={(e) => update('droneX', Number(e.target.value))}
-                        className="input-glow" />
-                    </FormRow>
-                    <FormRow label="Y 坐标">
-                      <input type="number" value={local.droneY}
-                        onChange={(e) => update('droneY', Number(e.target.value))}
-                        className="input-glow" />
-                    </FormRow>
-                    <FormRow label="Z 坐标">
-                      <input type="number" value={local.droneZ}
-                        onChange={(e) => update('droneZ', Number(e.target.value))}
-                        className="input-glow" />
-                    </FormRow>
-                  </div>
-
-                  <FormRow label="电池电量">
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1 relative">
-                        <input
-                          type="range" min="0" max="100" value={local.battery}
-                          onChange={(e) => update('battery', Number(e.target.value))}
-                          className="w-full h-2 rounded-full appearance-none cursor-pointer bg-gray-200
-                            [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
-                            [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-agri-500 [&::-webkit-slider-thumb]:to-emerald-600
-                            [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white
-                            [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110"
-                        />
-                        <div
-                          className="absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r from-agri-400 to-emerald-500 pointer-events-none"
-                          style={{ width: `${local.battery}%` }}
-                        />
-                      </div>
-                      <span className={`text-lg font-black tabular-nums w-14 text-right ${
-                        local.battery > 50 ? 'text-agri-600' : local.battery > 20 ? 'text-amber-500' : 'text-red-500'
-                      }`}>
-                        {local.battery}%
-                      </span>
-                    </div>
-                  </FormRow>
-
-                  <div className="space-y-3.5 pt-3">
-                    {[
-                      { key: 'speedCheck', label: '飞行速度自检', desc: '自动检测并优化飞行速度' },
-                      { key: 'obstacleCheck', label: '障碍物检测开启', desc: '实时检测规避障碍物' },
-                      { key: 'altitudeCheck', label: '高度自动调整', desc: '根据地形自适应高度' },
-                    ].map((item) => (
-                      <label
-                        key={item.key}
-                        className={`flex items-center gap-3.5 p-3 rounded-xl cursor-pointer transition-all duration-200 border ${
-                          local[item.key]
-                            ? 'bg-agri-50/70 border-agri-200/60'
-                            : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'
-                        }`}
-                      >
-                        <div className="relative">
-                          <input
-                            type="checkbox"
-                            checked={local[item.key]}
-                            onChange={(e) => update(item.key, e.target.checked)}
-                            className="sr-only"
-                          />
-                          <div className={`w-11 h-6 rounded-full transition-colors duration-300 ${
-                            local[item.key] ? 'bg-agri-500' : 'bg-gray-300'
-                          }`}>
-                            <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-300 mt-0.5 ${
-                              local[item.key] ? 'translate-x-5.5 ml-0.5' : 'translate-x-0.5'
-                            }`} />
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-gray-800">{item.label}</span>
-                          <p className="text-xs text-gray-400">{item.desc}</p>
-                        </div>
-                      </label>
-                    ))}
+                  <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm leading-relaxed text-emerald-800">
+                    <strong>布点提示：</strong>{selectedScene.planning.placement}
                   </div>
                 </div>
               </GlassCard>
-            </motion.div>
+
+              <GlassCard variant="premium" hover={false} className="!rounded-lg !p-6">
+                <h2 className="mb-5 flex items-center gap-3 text-xl font-black text-dark">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+                    <HiCloud className="h-5 w-5" />
+                  </span>
+                  风场高度层
+                </h2>
+
+                <div className="space-y-3">
+                  {selectedScene.windLayers.map((layer) => (
+                    <WindLayerRow key={layer.id} layer={layer} active={layer.id === selectedScene.focusLayerId} />
+                  ))}
+                </div>
+              </GlassCard>
+
+              <GlassCard variant="premium" hover={false} className="!rounded-lg !p-6 xl:col-span-2">
+                <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
+                  <div>
+                    <h2 className="mb-5 flex items-center gap-3 text-xl font-black text-dark">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                        <HiLightningBolt className="h-5 w-5" />
+                      </span>
+                      每机能耗参数
+                    </h2>
+
+                    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-1 2xl:grid-cols-3">
+                      <MetricInput
+                        label="初始电量"
+                        suffix="%"
+                        min={1}
+                        max={100}
+                        step={1}
+                        value={local.initialBatteryPercent}
+                        onChange={(value) => update('initialBatteryPercent', value)}
+                      />
+                      <MetricInput
+                        label="基础耗电"
+                        suffix="%/m"
+                        min={0.01}
+                        max={5}
+                        step={0.001}
+                        value={local.baseConsumptionPerMeter}
+                        onChange={(value) => update('baseConsumptionPerMeter', value)}
+                      />
+                      <MetricInput
+                        label="风敏感系数"
+                        suffix=""
+                        min={0}
+                        max={0.2}
+                        step={0.0001}
+                        value={local.windSensitivity}
+                        onChange={(value) => update('windSensitivity', value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col justify-between rounded-lg border border-slate-100 bg-slate-50 p-5">
+                    <div>
+                      <p className="text-sm font-black text-slate-800">三维页会直接打开当前场景</p>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                        进入后顶部保留两个场景按钮，右侧是航线配置中心，左侧显示风场高度层。
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <StatusBadge>场景已选择</StatusBadge>
+                        <StatusBadge>风场已加载</StatusBadge>
+                        <StatusBadge>布点在三维页完成</StatusBadge>
+                      </div>
+                    </div>
+
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="btn-primary mt-6 flex w-full items-center justify-center gap-2 rounded-lg py-4 text-base shadow-glow-sm sm:text-lg"
+                    >
+                      进入 {selectedScene.shortName} 三维配置中心
+                      <HiArrowRight className="h-5 w-5" />
+                    </motion.button>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.section>
           </div>
         </form>
       </div>
@@ -220,24 +267,136 @@ export default function FlightParamsPage() {
   )
 }
 
-function CoordInput({ label, value, onChange }) {
+function SceneFact({ icon, label, value }) {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-500 mb-1.5">{label}</label>
-      <input
-        type="number" value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="input-glow"
-      />
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+      <span className="flex min-w-0 items-center gap-2 font-semibold text-slate-500">
+        <span className="text-agri-600">{icon}</span>
+        {label}
+      </span>
+      <span className="text-right font-bold text-slate-800">{value}</span>
     </div>
   )
 }
 
-function FormRow({ label, children }) {
+function WorkflowStep({ index, title, text }) {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-500 mb-1.5">{label}</label>
-      {children}
+    <div className="flex gap-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-agri-500 text-sm font-black text-white">
+        {index}
+      </span>
+      <span>
+        <span className="block text-sm font-black text-slate-800">{title}</span>
+        <span className="mt-1 block text-xs leading-relaxed text-slate-500">{text}</span>
+      </span>
     </div>
+  )
+}
+
+function CounterControl({ label, value, min, max, onChange, description }) {
+  const setClampedValue = (nextValue) => {
+    onChange(Math.min(max, Math.max(min, nextValue)))
+  }
+
+  return (
+    <div className="rounded-lg border border-slate-100 bg-white px-4 py-4">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-black text-slate-800">{label}</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-500">{description}</p>
+        </div>
+        <div className="flex h-10 shrink-0 items-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+          <button
+            type="button"
+            onClick={() => setClampedValue(value - 1)}
+            className="flex h-10 w-10 items-center justify-center text-slate-500 transition-colors hover:bg-white hover:text-agri-600"
+            aria-label={`减少${label}`}
+          >
+            <HiMinus className="h-4 w-4" />
+          </button>
+          <input
+            type="number"
+            min={min}
+            max={max}
+            value={value}
+            onChange={(event) => setClampedValue(Number(event.target.value))}
+            className="h-10 w-14 border-x border-slate-200 bg-white text-center text-base font-black text-slate-900 outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setClampedValue(value + 1)}
+            className="flex h-10 w-10 items-center justify-center text-slate-500 transition-colors hover:bg-white hover:text-agri-600"
+            aria-label={`增加${label}`}
+          >
+            <HiPlus className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function WindLayerRow({ layer, active }) {
+  return (
+    <div className={`rounded-lg border px-4 py-3 ${active ? 'border-agri-200 bg-agri-50' : 'border-slate-100 bg-white'}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: layer.color }} />
+          <span>
+            <span className="block text-sm font-black text-slate-800">{layer.label}</span>
+            <span className="text-xs text-slate-500">{layer.note}</span>
+          </span>
+        </div>
+        {active && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-agri-500 px-2.5 py-1 text-xs font-bold text-white">
+            <HiCheckCircle className="h-3.5 w-3.5" />
+            当前重点
+          </span>
+        )}
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
+        <LayerMetric label="高度" value={`${layer.height}m`} />
+        <LayerMetric label="风速" value={`${layer.speed}m/s`} />
+        <LayerMetric label="方向" value={`${layer.direction}°`} />
+      </div>
+    </div>
+  )
+}
+
+function LayerMetric({ label, value }) {
+  return (
+    <div className="rounded-md bg-white/80 px-2 py-2">
+      <span className="block text-slate-400">{label}</span>
+      <span className="mt-0.5 block font-black text-slate-800">{value}</span>
+    </div>
+  )
+}
+
+function MetricInput({ label, suffix, min, max, step, value, onChange }) {
+  return (
+    <label className="block rounded-lg border border-slate-100 bg-slate-50 p-4">
+      <span className="block text-sm font-black text-slate-800">{label}</span>
+      <span className="mt-3 flex items-center gap-2">
+        <input
+          type="number"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(event) => onChange(Number(event.target.value))}
+          className="input-glow !rounded-lg !bg-white !py-2.5"
+        />
+        {suffix && <span className="w-10 text-sm font-bold text-slate-500">{suffix}</span>}
+      </span>
+    </label>
+  )
+}
+
+function StatusBadge({ children }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-agri-700">
+      <HiCheckCircle className="h-3.5 w-3.5" />
+      {children}
+    </span>
   )
 }

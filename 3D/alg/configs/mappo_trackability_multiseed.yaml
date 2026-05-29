@@ -1,0 +1,78 @@
+base_config: configs/default.yaml
+validation_suite: configs/mappo_validation_same_action.yaml
+output_dir: outputs/mappo_trackability_multiseed
+selection_mode: trackability
+checkpoint_selection_mode: trackability
+
+experiments:
+  - name: track_w25_seed7_e40
+    overrides:
+      mappo:
+        seed: 7
+        episodes: 40
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 2
+        checkpoint_selection_mode: trackability
+      marl:
+        reward:
+          task_complete_reward: 100.0
+          distance_weight: 10.0
+          weather_weight: 20.0
+          energy_weight: 5.0
+          risk_weight: 1.0
+          path_cost_weight: 50.0
+          trackability_weight: 25.0
+          max_distance_km: 1500.0
+          max_path_cost: 12000.0
+          max_trackable_segment_km: 1000.0
+
+  - name: track_w25_seed11_e40
+    overrides:
+      mappo:
+        seed: 11
+        episodes: 40
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 2
+        checkpoint_selection_mode: trackability
+      marl:
+        reward:
+          task_complete_reward: 100.0
+          distance_weight: 10.0
+          weather_weight: 20.0
+          energy_weight: 5.0
+          risk_weight: 1.0
+          path_cost_weight: 50.0
+          trackability_weight: 25.0
+          max_distance_km: 1500.0
+          max_path_cost: 12000.0
+          max_trackable_segment_km: 1000.0
+
+  - name: track_w25_seed17_e40
+    overrides:
+      mappo:
+        seed: 17
+        episodes: 40
+        ppo_epochs: 2
+        learning_rate: 0.0003
+        reward_scale: 0.01
+        eval_interval: 5
+        eval_episodes: 2
+        checkpoint_selection_mode: trackability
+      marl:
+        reward:
+          task_complete_reward: 100.0
+          distance_weight: 10.0
+          weather_weight: 20.0
+          energy_weight: 5.0
+          risk_weight: 1.0
+          path_cost_weight: 50.0
+          trackability_weight: 25.0
+          max_distance_km: 1500.0
+          max_path_cost: 12000.0
+          max_trackable_segment_km: 1000.0
