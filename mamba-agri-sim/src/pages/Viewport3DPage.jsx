@@ -23,7 +23,7 @@ function getDroneOrchardUrl() {
 
 export default function Viewport3DPage() {
   const location = useLocation()
-  const { selectedSceneId, setSelectedSceneId } = useAppContext()
+  const { flightParams, selectedSceneId, setSelectedSceneId } = useAppContext()
   const searchParams = new URLSearchParams(location.search)
   const requestedSceneId = searchParams.get('scene')
   const sceneId = requestedSceneId ? getSceneById(requestedSceneId).id : selectedSceneId
@@ -37,6 +37,9 @@ export default function Viewport3DPage() {
 
   searchParams.set('embed', '1')
   searchParams.set('scene', sceneId)
+  searchParams.set('drones', String(flightParams.droneCount))
+  searchParams.set('tasks', String(flightParams.taskCount))
+  searchParams.set('auto', String(flightParams.autoAssignment !== false))
   const src = `${droneOrchardUrl}${droneOrchardUrl.includes('?') ? '&' : '?'}${searchParams.toString()}`
 
   return (

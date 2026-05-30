@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAppContext } from '../context/AppContext'
 import PageContainer from '../components/common/PageContainer'
@@ -8,11 +7,9 @@ import SectionTitle from '../components/common/SectionTitle'
 import SceneSelector from '../components/common/SceneSelector'
 import {
   HiAdjustments,
-  HiArrowRight,
   HiCheckCircle,
   HiCloud,
   HiCursorClick,
-  HiLightningBolt,
   HiLocationMarker,
   HiMap,
   HiMinus,
@@ -22,16 +19,16 @@ import {
 
 const WORKFLOW_STEPS = [
   {
-    title: '无人机起点',
-    text: '进入三维沙盘后，在地形上点击放置绿色起飞点。',
+    title: '选择无人机起点',
+    text: '先在这里保存任务参数，进入三维控制后再在地形上放置绿色起飞点。',
   },
   {
-    title: '任务目标点',
-    text: '继续点击设置红色任务点，平原按果树行，梯田按分层田面。',
+    title: '设置任务目标点',
+    text: '继续在三维控制页放置红色任务点，平原按果树行，梯田按分层田面。',
   },
   {
-    title: '自动匹配',
-    text: '使用最近距离匹配生成航线，再进入仿真界面。',
+    title: '自动匹配航线',
+    text: '三维控制页根据最近距离匹配任务并生成航线。',
   },
   {
     title: '能耗计算',
@@ -41,15 +38,10 @@ const WORKFLOW_STEPS = [
 
 export default function FlightParamsPage() {
   const { flightParams, setFlightParams, selectedScene } = useAppContext()
-  const navigate = useNavigate()
   const [local, setLocal] = useState(() => ({
-    droneCount: selectedScene.planning.droneCount,
-    taskCount: selectedScene.planning.taskCount,
-    autoAssignment: true,
-    initialBatteryPercent: selectedScene.energy.initialBatteryPercent,
-    baseConsumptionPerMeter: selectedScene.energy.baseConsumptionPerMeter,
-    windSensitivity: selectedScene.energy.windSensitivity,
-    ...flightParams,
+    droneCount: flightParams.droneCount ?? selectedScene.planning.droneCount,
+    taskCount: flightParams.taskCount ?? selectedScene.planning.taskCount,
+    autoAssignment: flightParams.autoAssignment ?? true,
   }))
 
   const focusLayer = selectedScene.windLayers.find((layer) => layer.id === selectedScene.focusLayerId) ?? selectedScene.windLayers[0]
@@ -58,31 +50,22 @@ export default function FlightParamsPage() {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    const query = new URLSearchParams({
-      scene: selectedScene.id,
-      drones: String(local.droneCount),
-      tasks: String(local.taskCount),
-      battery: String(local.initialBatteryPercent),
-      consumption: String(local.baseConsumptionPerMeter),
-      windSensitivity: String(local.windSensitivity),
-      auto: String(local.autoAssignment),
-    })
-
     setFlightParams({
-      ...local,
+      droneCount: local.droneCount,
+      taskCount: local.taskCount,
+      autoAssignment: local.autoAssignment,
       sceneId: selectedScene.id,
       windLayers: selectedScene.windLayers,
     })
-    navigate(`/viewport-3d?${query.toString()}`)
   }
 
   return (
     <PageContainer className="bg-gradient-to-b from-slate-950 via-emerald-950 to-slate-50">
       <div className="mx-auto max-w-7xl px-6 py-14 md:py-18">
         <SectionTitle
-          badge="三维作业配置"
-          title="按三维控制台配置飞行任务"
-          subtitle="前端配置与三维页面保持同一套流程：选择场景、确认风场、设置起点和任务点数量，然后进入三维沙盘布点仿真"
+          badge="飞行任务配置"
+          title="先配置参数，再从导航进入三维控制"
+          subtitle="这里用于选择场景、确认风场、设置起点和任务点数量；三维页面只保留顶部导航中的「三维控制」一个入口。"
           light
         />
 
@@ -148,7 +131,7 @@ export default function FlightParamsPage() {
                     min={1}
                     max={12}
                     onChange={(value) => update('droneCount', value)}
-                    description="对应三维页中的绿色起飞点数量"
+                    description="对应三维控制页中的绿色起飞点数量"
                   />
                   <CounterControl
                     label="任务目标点"
@@ -156,7 +139,7 @@ export default function FlightParamsPage() {
                     min={1}
                     max={20}
                     onChange={(value) => update('taskCount', value)}
-                    description="对应三维页中的红色任务点数量"
+                    description="对应三维控制页中的红色任务点数量"
                   />
 
                   <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
@@ -194,69 +177,28 @@ export default function FlightParamsPage() {
               </GlassCard>
 
               <GlassCard variant="premium" hover={false} className="!rounded-lg !p-6 xl:col-span-2">
-                <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
+                <div className="flex flex-col justify-between rounded-lg border border-slate-100 bg-slate-50 p-5">
                   <div>
-                    <h2 className="mb-5 flex items-center gap-3 text-xl font-black text-dark">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-                        <HiLightningBolt className="h-5 w-5" />
-                      </span>
-                      每机能耗参数
-                    </h2>
-
-                    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-1 2xl:grid-cols-3">
-                      <MetricInput
-                        label="初始电量"
-                        suffix="%"
-                        min={1}
-                        max={100}
-                        step={1}
-                        value={local.initialBatteryPercent}
-                        onChange={(value) => update('initialBatteryPercent', value)}
-                      />
-                      <MetricInput
-                        label="基础耗电"
-                        suffix="%/m"
-                        min={0.01}
-                        max={5}
-                        step={0.001}
-                        value={local.baseConsumptionPerMeter}
-                        onChange={(value) => update('baseConsumptionPerMeter', value)}
-                      />
-                      <MetricInput
-                        label="风敏感系数"
-                        suffix=""
-                        min={0}
-                        max={0.2}
-                        step={0.0001}
-                        value={local.windSensitivity}
-                        onChange={(value) => update('windSensitivity', value)}
-                      />
+                    <p className="text-sm font-black text-slate-800">保存后从顶部导航进入三维控制</p>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                      当前页面只保存飞行参数，不再自动跳转到三维页面，避免多个入口造成状态混乱。
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <StatusBadge>场景已选择</StatusBadge>
+                      <StatusBadge>风场已加载</StatusBadge>
+                      <StatusBadge>布点在三维页完成</StatusBadge>
                     </div>
                   </div>
 
-                  <div className="flex flex-col justify-between rounded-lg border border-slate-100 bg-slate-50 p-5">
-                    <div>
-                      <p className="text-sm font-black text-slate-800">三维页会直接打开当前场景</p>
-                      <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                        进入后顶部保留两个场景按钮，右侧是航线配置中心，左侧显示风场高度层。
-                      </p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        <StatusBadge>场景已选择</StatusBadge>
-                        <StatusBadge>风场已加载</StatusBadge>
-                        <StatusBadge>布点在三维页完成</StatusBadge>
-                      </div>
-                    </div>
-
-                    <motion.button
-                      type="submit"
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="btn-primary mt-6 flex w-full items-center justify-center gap-2 rounded-lg py-4 text-base shadow-glow-sm sm:text-lg"
-                    >
-                      进入 {selectedScene.shortName} 三维配置中心
-                      <HiArrowRight className="h-5 w-5" />
-                    </motion.button>
-                  </div>
+                  <motion.button
+                    type="submit"
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="btn-primary mt-6 flex w-full items-center justify-center gap-2 rounded-lg py-4 text-base shadow-glow-sm sm:text-lg"
+                  >
+                    保存 {selectedScene.shortName} 飞行配置
+                    <HiCheckCircle className="h-5 w-5" />
+                  </motion.button>
                 </div>
               </GlassCard>
             </motion.section>
@@ -369,26 +311,6 @@ function LayerMetric({ label, value }) {
       <span className="block text-slate-400">{label}</span>
       <span className="mt-0.5 block font-black text-slate-800">{value}</span>
     </div>
-  )
-}
-
-function MetricInput({ label, suffix, min, max, step, value, onChange }) {
-  return (
-    <label className="block rounded-lg border border-slate-100 bg-slate-50 p-4">
-      <span className="block text-sm font-black text-slate-800">{label}</span>
-      <span className="mt-3 flex items-center gap-2">
-        <input
-          type="number"
-          min={min}
-          max={max}
-          step={step}
-          value={value}
-          onChange={(event) => onChange(Number(event.target.value))}
-          className="input-glow !rounded-lg !bg-white !py-2.5"
-        />
-        {suffix && <span className="w-10 text-sm font-bold text-slate-500">{suffix}</span>}
-      </span>
-    </label>
   )
 }
 

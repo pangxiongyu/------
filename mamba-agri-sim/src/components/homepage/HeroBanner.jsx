@@ -64,7 +64,7 @@ export default function HeroBanner() {
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4 mb-12">
-              <Link to="/viewport-3d" className="btn-glow text-lg px-9 py-4 group">
+              <Link to="/flight-params" className="btn-glow text-lg px-9 py-4 group">
                 <HiPlay className="w-5 h-5 text-agri-500" />
                 <span>进入系统</span>
                 <HiArrowRight className="w-5 h-5 text-agri-400 transition-transform duration-300 group-hover:translate-x-1" />

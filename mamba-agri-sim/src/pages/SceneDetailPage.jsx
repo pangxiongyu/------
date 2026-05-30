@@ -5,7 +5,7 @@ import GlassCard from '../components/common/GlassCard'
 import SectionTitle from '../components/common/SectionTitle'
 import SceneSelector from '../components/common/SceneSelector'
 import { useAppContext } from '../context/AppContext'
-import { HiArrowRight, HiChartBar, HiCog, HiCube, HiLocationMarker } from 'react-icons/hi'
+import { HiChartBar, HiCog, HiCube, HiLocationMarker } from 'react-icons/hi'
 
 export default function SceneDetailPage() {
   const { selectedScene } = useAppContext()
@@ -22,8 +22,8 @@ export default function SceneDetailPage() {
       <div className="max-w-7xl mx-auto px-6 py-14 md:py-18">
         <SectionTitle
           badge="场景详情"
-          title="双场景三维作业空间"
-          subtitle="在同一套前端流程中选择场景、配置参数，并进入对应的三维仿真沙盘"
+          title="双场景作业空间"
+          subtitle="在这里选择和查看作业场景；三维控制只从顶部导航进入，避免多个入口造成状态混乱。"
           light
         />
 
@@ -98,15 +98,14 @@ export default function SceneDetailPage() {
               </div>
             </GlassCard>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3">
               <Link to="/flight-params" className="btn-primary justify-center rounded-lg py-3">
                 <HiCog className="h-5 w-5" />
                 配置飞行参数
               </Link>
-              <Link to={`/viewport-3d?scene=${selectedScene.id}`} className="btn-accent justify-center rounded-lg py-3">
-                进入三维控制
-                <HiArrowRight className="h-5 w-5" />
-              </Link>
+              <p className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-500">
+                三维控制统一从顶部导航进入
+              </p>
             </div>
           </motion.aside>
         </div>
