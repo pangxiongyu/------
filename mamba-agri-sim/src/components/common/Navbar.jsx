@@ -52,11 +52,8 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
           <div className="relative">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-agri-500 to-agri-700 flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
-              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L2 19h6l4-8 4 8h6L12 2z"/>
-                <circle cx="12" cy="19" r="2"/>
-              </svg>
+            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <img src="/brand-logo.svg" alt="智翼农航" className="w-9 h-9" />
             </div>
             <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-white animate-breathe" />
           </div>
@@ -65,7 +62,7 @@ export default function Navbar() {
               ? 'text-white group-hover:text-agri-200'
               : 'text-dark group-hover:text-agri-600'
           }`}>
-            智农<span className="text-agri-500">Mamba</span>
+            智翼<span className="text-agri-500">农航</span>
           </span>
         </Link>
 

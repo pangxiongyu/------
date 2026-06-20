@@ -66,7 +66,7 @@ export default function ThanksPage() {
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-gold to-amber-600 flex items-center justify-center shadow-md">
                 <HiStar className="w-4 h-4 text-white" />
               </div>
-              <span className="text-white/85 font-bold text-lg">MambaAgriSim</span>
+              <span className="text-white/85 font-bold text-lg">智翼农航</span>
             </div>
           </motion.div>
 

@@ -87,13 +87,10 @@ export default function TransitionPage() {
 
         {/* Bottom branding */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2.5 bg-white/70 backdrop-blur-sm rounded-full px-5 py-2.5 border border-white/50 shadow-sm">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-agri-500 to-agri-700 flex items-center justify-center shadow-sm">
-            <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L2 19h6l4-8 4 8h6L12 2z"/>
-              <circle cx="12" cy="19" r="2"/>
-            </svg>
+          <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shadow-sm overflow-hidden">
+            <img src="/brand-logo.svg" alt="智翼农航" className="w-7 h-7" />
           </div>
-          <span className="text-sm font-bold text-dark">Mamba<span className="text-agri-500">AgriSim</span></span>
+          <span className="text-sm font-bold text-dark">智翼<span className="text-agri-500">农航</span></span>
         </div>
       </div>
     </PageContainer>
