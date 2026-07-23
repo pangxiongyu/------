@@ -1,21 +1,21 @@
 const techfeatures = [{
-  title: 'GAT 图注意力网络',
-  description: '基于图注意力机制的多机协同决策模型，实时感知农田拓扑结构变化，自适应调整飞行编队策略。',
+  title: 'GAT 协同感知',
+  description: '把农田、无人机和任务之间的关系连起来看，帮助系统判断每架无人机该怎么配合、往哪里飞。',
   icon: 'network',
   gradient: 'from-emerald-500 to-teal-600'
 }, {
-  title: 'Mamba-MPSO 优化算法',
-  description: '融合状态空间模型与多目标粒子群优化的路径规划引擎，在复杂山地实现最优航迹计算。',
+  title: 'Mamba-MPSO 路径优化',
+  description: '在山地、果园等复杂场景里快速比较多条航线，给无人机选择更省时、更省电的飞行方案。',
   icon: 'algorithm',
   gradient: 'from-blue-500 to-indigo-600'
 }, {
-  title: '强化学习 / 多目标优化',
-  description: '深度强化学习驱动自适应决策，同时优化能耗、覆盖率、时间效率等多维目标约束。',
+  title: '强化学习策略',
+  description: '让系统在不断试错中学会调整策略，任务变化时也能兼顾覆盖范围、能耗和作业效率。',
   icon: 'brain',
   gradient: 'from-purple-500 to-violet-600'
 }, {
-  title: 'WebGL 三维渲染引擎',
-  description: '基于 Three.js 的高性能三维地形可视化引擎，支持大规模点云实时渲染与飞行轨迹回放。',
+  title: 'WebGL 三维展示',
+  description: '直接在浏览器里展示三维地形、无人机位置和飞行轨迹，方便观察任务过程和回放结果。',
   icon: 'cube',
   gradient: 'from-amber-500 to-orange-600'
 }];
