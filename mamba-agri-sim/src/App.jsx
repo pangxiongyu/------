@@ -1,39 +1,33 @@
-import { lazy, Suspense } from 'react'
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
-import Navbar from './components/common/Navbar'
-import { useAuth } from './context/AuthContext'
-
-const HomePage = lazy(() => import('./pages/HomePage'))
-const SceneDetailPage = lazy(() => import('./pages/SceneDetailPage'))
-const ApplicationsPage = lazy(() => import('./pages/ApplicationsPage'))
-const FlightParamsPage = lazy(() => import('./pages/FlightParamsPage'))
-const Viewport3DPage = lazy(() => import('./pages/Viewport3DPage'))
-const DataDisplayPage = lazy(() => import('./pages/DataDisplayPage'))
-const TransitionPage = lazy(() => import('./pages/TransitionPage'))
-const ThanksPage = lazy(() => import('./pages/ThanksPage'))
-const LoginPage = lazy(() => import('./pages/LoginPage'))
-const RegisterPage = lazy(() => import('./pages/RegisterPage'))
-
+import { lazy, Suspense } from 'react';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import Navbar from './components/common/Navbar';
+import { useauth } from './context/AuthContext';
+const HomePage = lazy(() => import('./pages/HomePage'));
+const SceneDetailPage = lazy(() => import('./pages/SceneDetailPage'));
+const ApplicationsPage = lazy(() => import('./pages/ApplicationsPage'));
+const FlightParamsPage = lazy(() => import('./pages/FlightParamsPage'));
+const Viewport3DPage = lazy(() => import('./pages/Viewport3DPage'));
+const DataDisplayPage = lazy(() => import('./pages/DataDisplayPage'));
+const TransitionPage = lazy(() => import('./pages/TransitionPage'));
+const ThanksPage = lazy(() => import('./pages/ThanksPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 function LoadingFallback() {
-  return (
-    <div className="min-h-screen pt-16 flex items-center justify-center">
+  return <div className="min-h-screen pt-16 flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <div className="w-10 h-10 border-[3px] border-agri-200 border-t-agri-500 rounded-full animate-spin" />
         <p className="text-gray-400 text-sm">加载中...</p>
       </div>
-    </div>
-  )
+    </div>;
 }
-
 export default function App() {
-  const location = useLocation()
-  const { user } = useAuth()
-
-  const hideNav = location.pathname === '/login' || location.pathname === '/register'
-
-  return (
-    <>
-      {!hideNav && <Navbar />}
+  const location = useLocation();
+  const {
+    user
+  } = useauth();
+  const hidenav = location.pathname === '/login' || location.pathname === '/register';
+  return <>
+      {!hidenav && <Navbar />}
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -48,6 +42,5 @@ export default function App() {
           <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
         </Routes>
       </Suspense>
-    </>
-  )
+    </>;
 }

@@ -1,93 +1,117 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-
-const AuthContext = createContext()
-
-const STORAGE_KEY = 'mamba_agri_sim_users'
-const CURRENT_USER_KEY = 'mamba_agri_sim_current_user'
-
-function loadUsers() {
+import { createContext, useContext, useState, useEffect } from 'react';
+const AuthContext = createContext();
+const storagekey = 'mamba_agri_sim_users';
+const currentuserkey = 'mamba_agri_sim_current_user';
+function loadusers() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : {}
+    const raw = localStorage.getItem(storagekey);
+    return raw ? JSON.parse(raw) : {};
   } catch {
-    return {}
+    return {};
   }
 }
-
-function saveUsers(users) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(users))
+function saveusers(users) {
+  localStorage.setItem(storagekey, JSON.stringify(users));
 }
-
-function loadCurrentUser() {
+function loadcurrentuser() {
   try {
-    const raw = localStorage.getItem(CURRENT_USER_KEY)
-    return raw ? JSON.parse(raw) : null
+    const raw = localStorage.getItem(currentuserkey);
+    return raw ? JSON.parse(raw) : null;
   } catch {
-    return null
+    return null;
   }
 }
-
-function saveCurrentUser(user) {
+function savecurrentuser(user) {
   if (user) {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user))
+    localStorage.setItem(currentuserkey, JSON.stringify(user));
   } else {
-    localStorage.removeItem(CURRENT_USER_KEY)
+    localStorage.removeItem(currentuserkey);
   }
 }
-
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => loadCurrentUser())
-
+export function AuthProvider({
+  children
+}) {
+  const [user, setuser] = useState(() => loadcurrentuser());
   useEffect(() => {
-    saveCurrentUser(user)
-  }, [user])
-
+    savecurrentuser(user);
+  }, [user]);
   function login(username, password) {
-    const users = loadUsers()
-    const stored = users[username]
+    const users = loadusers();
+    const stored = users[username];
     if (!stored) {
-      return { ok: false, error: '用户不存在，请先注册' }
+      return {
+        ok: false,
+        error: '用户不存在，请先注册'
+      };
     }
     if (stored.password !== password) {
-      return { ok: false, error: '密码错误' }
+      return {
+        ok: false,
+        error: '密码错误'
+      };
     }
-    setUser({ username, displayName: stored.displayName })
-    return { ok: true }
+    setuser({
+      username,
+      displayName: stored.displayName
+    });
+    return {
+      ok: true
+    };
   }
-
-  function register(username, password, displayName) {
-    if (!username || !password || !displayName) {
-      return { ok: false, error: '请填写所有字段' }
+  function register(username, password, displayname) {
+    if (!username || !password || !displayname) {
+      return {
+        ok: false,
+        error: '请填写所有字段'
+      };
     }
     if (username.length < 3 || username.length > 20) {
-      return { ok: false, error: '用户名需 3-20 个字符' }
+      return {
+        ok: false,
+        error: '用户名需 3-20 个字符'
+      };
     }
     if (password.length < 6) {
-      return { ok: false, error: '密码至少 6 位' }
+      return {
+        ok: false,
+        error: '密码至少 6 位'
+      };
     }
-    const users = loadUsers()
+    const users = loadusers();
     if (users[username]) {
-      return { ok: false, error: '用户名已存在' }
+      return {
+        ok: false,
+        error: '用户名已存在'
+      };
     }
-    users[username] = { password, displayName }
-    saveUsers(users)
-    setUser({ username, displayName })
-    return { ok: true }
+    users[username] = {
+      password,
+      displayName: displayname
+    };
+    saveusers(users);
+    setuser({
+      username,
+      displayName: displayname
+    });
+    return {
+      ok: true
+    };
   }
-
   function logout() {
-    setUser(null)
+    setuser(null);
   }
-
-  return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+  return <AuthContext.Provider value={{
+    user,
+    login,
+    register,
+    logout
+  }}>
       {children}
-    </AuthContext.Provider>
-  )
+    </AuthContext.Provider>;
 }
-
-export function useAuth() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
-  return ctx
+function useauth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 }
+export { useauth };
